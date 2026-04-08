@@ -1,4 +1,4 @@
-# Stage 1: Build the JAR with Maven
+# Stage 1: Build with Maven
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /opt/app
@@ -6,11 +6,11 @@ WORKDIR /opt/app
 # Copy the source code
 COPY ./java-maven-sonar-argocd-helm-k8s/spring-boot-app /opt/app
 
-# Build the JAR
+# Build the JAR (skip tests for faster build)
 RUN mvn clean package -DskipTests
 
-# Stage 2: Create the runtime image
-FROM adoptopenjdk/openjdk11:alpine-jre
+# Stage 2: Runtime image with only JRE
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /opt/app
 
