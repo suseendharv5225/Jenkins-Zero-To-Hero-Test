@@ -1,21 +1,20 @@
-# Stage 1: Build with Maven
-FROM maven:3.9.9-eclipse-temurin-17 AS build
+# Use Java 11 Alpine base
+FROM adoptopenjdk/openjdk11:alpine-jre
 
+# Switch to root to install packages
+USER root
+
+# Install Maven and bash (needed for mvn commands)
+RUN apk add --no-cache maven bash
+
+# Set working directory
 WORKDIR /opt/app
 
-# Copy the source code
+# Copy source code
 COPY ./java-maven-sonar-argocd-helm-k8s/spring-boot-app /opt/app
 
-# Build the JAR (skip tests for faster build)
+# Build the JAR inside container
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime image with only JRE
-FROM eclipse-temurin:17-jre-alpine
-
-WORKDIR /opt/app
-
-# Copy the JAR from the build stage
-COPY --from=build /opt/app/target/*.jar app.jar
-
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "target/spring-boot-web.jar"]
