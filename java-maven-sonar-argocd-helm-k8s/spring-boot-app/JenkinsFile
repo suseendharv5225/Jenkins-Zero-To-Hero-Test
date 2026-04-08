@@ -1,8 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'suseendhar/ultimate-cicd-pipeline:v1'
-      args '--user root -t -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=""' // mount Docker socket to access the host's Docker daemon
+      image 'maven:3.9.9-eclipse-temurin-17'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
   stages {
