@@ -1,13 +1,18 @@
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM ubuntu:22.04
 
-RUN apk add --no-cache maven
+# Install Java and Maven
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk maven && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app
 
-# Copy full project
+# Copy source code and build
 COPY . .
-
-# Build inside container
 RUN mvn clean package -DskipTests
 
-ENTRYPOINT ["java","-jar","target/spring-boot-web.jar"]
+# Copy the jar to runtime location
+ARG artifact=target/spring-boot-web.jar
+COPY ${artifact} app.jar
+
+ENTRYPOINT ["java","-jar","app.jar"]
