@@ -7,12 +7,10 @@ RUN apt-get update && \
 
 WORKDIR /opt/app
 
-# Copy source code and build
+# Copy full project
 COPY . .
+
+# Build jar
 RUN mvn clean package -DskipTests
 
-# Copy the jar to runtime location
-ARG artifact=target/spring-boot-web.jar
-COPY ${artifact} app.jar
-
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","target/spring-boot-web.jar"]
