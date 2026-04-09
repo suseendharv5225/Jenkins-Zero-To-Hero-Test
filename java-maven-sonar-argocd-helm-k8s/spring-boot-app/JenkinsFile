@@ -14,19 +14,19 @@ pipeline {
         script {
           docker.image('suseendhar/pipelinehelp2').inside('--user root -v /var/run/docker.sock:/var/run/docker.sock') {
 
+            // ✅ Clone PUBLIC repo (no token needed)
             sh '''
-              # Fresh clone (IMPORTANT FIX)
               rm -rf repo
-              git clone https://github.com/suseendharv5225/Jenkins-Zero-To-Hero.git repo
+              git clone https://github.com/suseendharv5225/Jenkins-Zero-To-Hero-Test.git repo
             '''
 
-            // Build
+            // ✅ Build
             sh '''
               cd repo/java-maven-sonar-argocd-helm-k8s/spring-boot-app
               mvn clean package -DskipTests
             '''
 
-            // Sonar
+            // ✅ SonarQube
             withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
               sh '''
                 cd repo/java-maven-sonar-argocd-helm-k8s/spring-boot-app
@@ -36,17 +36,18 @@ pipeline {
               '''
             }
 
-            // Docker
+            // ✅ Docker Build
             sh '''
               cd repo/java-maven-sonar-argocd-helm-k8s/spring-boot-app
               docker build -t suseendhar/mypipeline:${BUILD_NUMBER} .
             '''
 
+            // ✅ Docker Push
             docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
               sh 'docker push suseendhar/mypipeline:${BUILD_NUMBER}'
             }
 
-            // Git update (NOW WORKS)
+            // ✅ Update Deployment + Push (TOKEN REQUIRED HERE)
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
               sh '''
                 cd repo
@@ -59,7 +60,7 @@ pipeline {
                 git add .
                 git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes"
 
-                git push https://${GITHUB_TOKEN}@github.com/suseendharv5225/Jenkins-Zero-To-Hero HEAD:main
+                git push https://${GITHUB_TOKEN}@github.com/suseendharv5225/Jenkins-Zero-To-Hero-Test HEAD:main
               '''
             }
 
