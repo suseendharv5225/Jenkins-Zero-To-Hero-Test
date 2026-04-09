@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
-# Install Java and Maven
+# Install Java 17 and Maven
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk maven && \
+    apt-get install -y openjdk-17-jdk maven && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app
