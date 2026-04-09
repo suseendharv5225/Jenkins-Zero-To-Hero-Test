@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'suseendhar/pipelinehelp2'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
     }
   }
 
